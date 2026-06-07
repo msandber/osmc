@@ -5,16 +5,14 @@ Subject: [PATCH] Disable power saving for Broadcom FullMAC
 
 Signed-off-by: Sam Nazarko <email@samnazarko.co.uk>
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index e2a459f..fc4250b 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -2773,7 +2773,7 @@ brcmf_cfg80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *ndev,
+@@ -3322,7 +3322,7 @@ brcmf_cfg80211_set_power_mgmt(struct wip
  	}
- 	brcmf_dbg(INFO, "power save %s\n", (pm ? "enabled" : "disabled"));
+ 	brcmf_info("power save %s\n", (pm ? "enabled" : "disabled"));
  
 -	err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_PM, pm);
 +	err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_PM, PM_OFF);
  	if (err) {
  		if (err == -ENODEV)
- 			brcmf_err("net_device is not ready yet\n");
+ 			bphy_err(drvr, "net_device is not ready yet\n");

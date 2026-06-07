@@ -24,8 +24,8 @@ fi
 }
 
 . ../common.sh
-test $1 == rbp2 && VERSION="5.15.92" && REV="1" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD + $INITRAMFS_EMBED)) && IMG_TYPE="zImage" && SIGN_KERNEL=0
-test $1 == rbp464 && VERSION="5.15.92" && REV="1" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD + $INITRAMFS_EMBED)) && IMG_TYPE="zImage" && SIGN_KERNEL=0
+test $1 == rbp2 && VERSION="6.12.93" && REV="1" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD + $INITRAMFS_EMBED)) && IMG_TYPE="zImage" && SIGN_KERNEL=0
+test $1 == rbp464 && VERSION="6.12.93" && REV="1" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD + $INITRAMFS_EMBED)) && IMG_TYPE="zImage" && SIGN_KERNEL=0
 test $1 == vero364 && VERSION="4.9.269" && REV="62" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD)) && IMG_TYPE="zImage" && SIGN_KERNEL=0
 test $1 == vero564 && VERSION="4.9.269" && REV="95" && FLAGS_INITRAMFS=$(($INITRAMFS_BUILD)) && IMG_TYPE="zImage" && SIGN_KERNEL=1
 if [ $1 == "rbp2" ] || [ $1 == "rbp464" ]
@@ -211,6 +211,7 @@ then
         then
                 $BUILD dtbs
                 mv arch/arm/boot/dts/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
+                mv arch/arm/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
                 mv arch/arm64/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
                 mv arch/arm*/boot/dts/overlays/*.dtbo ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays || true
                 mv arch/arm/boot/dts/overlays/README ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays || true

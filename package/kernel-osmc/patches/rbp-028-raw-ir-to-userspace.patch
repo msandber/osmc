@@ -8,11 +8,9 @@ Signed-off-by: Sam Nazarko <email@samnazarko.co.uk>
  arch/arm/boot/dts/overlays/gpio-ir-overlay.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts b/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
-index a2d6bc7..0bbd99e 100644
 --- a/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
 +++ b/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
-@@ -15,7 +15,7 @@
+@@ -17,7 +17,7 @@
                                  gpios = <&gpio 18 1>;
  
                                  // parameter for keymap name
@@ -21,6 +19,3 @@ index a2d6bc7..0bbd99e 100644
  
                                  status = "okay";
                          };
--- 
-2.1.0
-
