@@ -158,10 +158,10 @@ then
 		fi
 	fi
 	# Set versioning information for packaging
-	sed "s/EXTRAVERSION =/EXTRAVERSION = -${REV}-osmc/" -i Makefile
+	sed "s/EXTRAVERSION =/EXTRAVERSION = -${REV}-ms/" -i Makefile
 	# Create contents of source package
-	mkdir -p ../../files-source/usr/src/${1}-source-${VERSION}-${REV}-osmc/
-	cp -ar * ../../files-source/usr/src/${1}-source-${VERSION}-${REV}-osmc/
+	mkdir -p ../../files-source/usr/src/${1}-source-${VERSION}-${REV}-ms/
+	cp -ar * ../../files-source/usr/src/${1}-source-${VERSION}-${REV}-ms/
 	# Build the kernel
 	$BUILD
         if [ $? != 0 ]; then echo "Building kernel image failed" && exit 1; fi
@@ -172,61 +172,61 @@ then
         if [ $? != 0 ]; then echo "Building kernel modules failed" && exit 1; fi
 	mkdir -p ../../files-image/boot
 	# Copy config in to boot (files-image)
-	cp .config ../../files-image/boot/config-${VERSION}-${REV}-osmc
+	cp .config ../../files-image/boot/config-${VERSION}-${REV}-ms
 	# Copy system map to boot (files-image)
-        cp System.map ../../files-image/boot/System.map-${VERSION}-${REV}-osmc
+        cp System.map ../../files-image/boot/System.map-${VERSION}-${REV}-ms
 	# Debug kernel
 	mkdir -p ../../files-debug/var/osmc
-	cp vmlinux ../../files-debug/var/osmc/${1}-debug-${VERSION}-${REV}-osmc
+	cp vmlinux ../../files-debug/var/osmc/${1}-debug-${VERSION}-${REV}-ms
 	# Install headers in to headers package
-	mkdir -p ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-osmc/
+	mkdir -p ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-ms/
        find arch block certs crypto Documentation drivers fs init ipc kernel lib mm net samples security sound tools usr virt \
        -type f \
        \( -name Kconfig\* -o -name Kbuild\* -o -name Makefile\* -o -name \*\.pl \) \
-       -print0  | rsync  -a --files-from=- --from0 . ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-osmc/
+       -print0  | rsync  -a --files-from=- --from0 . ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-ms/
        find arch/$KHARCH  \
        -type f \
        \( -name Kconfig\* -o -name Kbuild\* -o -name Makefile\* -o -name \*\.[hS] -o -name \*\.lds \
        -o -name \*\.pl -o -name \*\.sh -o -name \*\.tbl -o -name \*-type \) \
-       -print0 | rsync -a --files-from=- --from0 . ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-osmc/
-       cp -ar include Kconfig Kbuild Makefile Module.symvers scripts  ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-osmc/
-       find ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-osmc/scripts -type f \( -name \*\.cmd -o -name \*\.o \) -delete
+       -print0 | rsync -a --files-from=- --from0 . ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-ms/
+       cp -ar include Kconfig Kbuild Makefile Module.symvers scripts  ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-ms/
+       find ../../files-headers/usr/src/${1}-headers-${VERSION}-${REV}-ms/scripts -type f \( -name \*\.cmd -o -name \*\.o \) -delete
 	# Fix symbolic links 1) first remove wrong ones from kernel image.
-	rm ../../files-image/lib/modules/${VERSION}-${REV}-osmc/source
-	rm ../../files-image/lib/modules/${VERSION}-${REV}-osmc/build
+	rm ../../files-image/lib/modules/${VERSION}-${REV}-ms/source
+	rm ../../files-image/lib/modules/${VERSION}-${REV}-ms/build
 	# Fix symbolic links 2) add source and build symbolic links to appropriate packages
-	mkdir -p ../../files-headers/lib/modules/${VERSION}-${REV}-osmc
-	mkdir -p ../../files-source/lib/modules/${VERSION}-${REV}-osmc
-	ln -sf /usr/src/${1}-headers-${VERSION}-${REV}-osmc ../../files-headers/lib/modules/${VERSION}-${REV}-osmc/build
-	ln -sf /usr/src/${1}-source-${VERSION}-${REV}-osmc ../../files-source/lib/modules/${VERSION}-${REV}-osmc/source
+	mkdir -p ../../files-headers/lib/modules/${VERSION}-${REV}-ms
+	mkdir -p ../../files-source/lib/modules/${VERSION}-${REV}-ms
+	ln -sf /usr/src/${1}-headers-${VERSION}-${REV}-ms ../../files-headers/lib/modules/${VERSION}-${REV}-ms/build
+	ln -sf /usr/src/${1}-source-${VERSION}-${REV}-ms ../../files-source/lib/modules/${VERSION}-${REV}-ms/source
 	if [ $? != 0 ]; then echo "Building kernel headers failed" && exit 1; fi
 	# Install sanitised headers in to sanitised headers package
-	mkdir -p ../../files-headers/usr/src/${1}-headers-sanitised-${VERSION}-${REV}-osmc/
-	$BUILD headers_install INSTALL_HDR_PATH=../../files-headers-sanitised/usr/src/${1}-headers-sanitised-${VERSION}-${REV}-osmc/
+	mkdir -p ../../files-headers/usr/src/${1}-headers-sanitised-${VERSION}-${REV}-ms/
+	$BUILD headers_install INSTALL_HDR_PATH=../../files-headers-sanitised/usr/src/${1}-headers-sanitised-${VERSION}-${REV}-ms/
 	if [ $? != 0 ]; then echo "Building kernel headers-sanitised failed" && exit 1; fi
 	# Make modules directory
-	mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers
-	if [ "$1" == "rbp2" ] || [ "$1" == "rbp464" ]; then mkdir -p ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays; fi
+	mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers
+	if [ "$1" == "rbp2" ] || [ "$1" == "rbp464" ]; then mkdir -p ../../files-image/boot/dtb-${VERSION}-${REV}-ms/overlays; fi
         if [ "$1" == "rbp2" ] || [ "$1" == "rbp464" ]
         then
                 $BUILD dtbs
-                mv arch/arm/boot/dts/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
-                mv arch/arm/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
-                mv arch/arm64/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/ || true
-                mv arch/arm*/boot/dts/overlays/*.dtbo ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays || true
-                mv arch/arm/boot/dts/overlays/README ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays || true
-                mv arch/arm/boot/dts/overlays/overlay_map.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/overlays || true # This is a hack for Pi 4, because overlay_map.dtb isn't present in arm64 directory
+                mv arch/arm/boot/dts/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-ms/ || true
+                mv arch/arm/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-ms/ || true
+                mv arch/arm64/boot/dts/broadcom/*.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-ms/ || true
+                mv arch/arm*/boot/dts/overlays/*.dtbo ../../files-image/boot/dtb-${VERSION}-${REV}-ms/overlays || true
+                mv arch/arm/boot/dts/overlays/README ../../files-image/boot/dtb-${VERSION}-${REV}-ms/overlays || true
+                mv arch/arm/boot/dts/overlays/overlay_map.dtb ../../files-image/boot/dtb-${VERSION}-${REV}-ms/overlays || true # This is a hack for Pi 4, because overlay_map.dtb isn't present in arm64 directory
                 if [ "$1" == "rbp2" ]
                 then
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/bcm2711-rpi-*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/bcm2711-rpi-*.dtb
                 fi
                 if [ "$1" == "rbp464" ]
                 then
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/*rpi-b*.dtb
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/*rpi-*3*.dtb
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/*rpi-*2*.dtb
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/bcm2835*.dtb
-                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-osmc/bcm2708*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/*rpi-b*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/*rpi-*3*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/*rpi-*2*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/bcm2835*.dtb
+                        rm ../../files-image/boot/dtb-${VERSION}-${REV}-ms/bcm2708*.dtb
                fi
         fi
 	if [ "$1" == "vero364" ]
@@ -245,16 +245,16 @@ then
 			if [ $? != 0 ]; then echo "Creating boot image failed in secure mode" && exit 1; fi
 			scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input multi.dtb --output $DTB_FILE
 			if [ $? != 0 ]; then echo "Signing DTB image failed" && exit 1; fi
-			scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input kernel.img --output ../../files-image/boot/kernel-${VERSION}-${REV}-osmc.img
+			scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input kernel.img --output ../../files-image/boot/kernel-${VERSION}-${REV}-ms.img
 			if [ $? != 0]; then echo "Signing kernel image failed" && exit 1; fi
 		else
-			scripts/mkbootimg --kernel arch/arm64/boot/Image.gz --pagesize 2048 --header_version 1 --base 0x0 --kernel_offset 0x1080000 --ramdisk ../../initramfs-src/initrd.img.gz --second multi.dtb --output ../../files-image/boot/kernel-${VERSION}-${REV}-osmc.img
+			scripts/mkbootimg --kernel arch/arm64/boot/Image.gz --pagesize 2048 --header_version 1 --base 0x0 --kernel_offset 0x1080000 --ramdisk ../../initramfs-src/initrd.img.gz --second multi.dtb --output ../../files-image/boot/kernel-${VERSION}-${REV}-ms.img
 			if [ $? != 0 ]; then echo "Creating boot image failed in non-secure mode" && exit 1; fi
 
 		fi
 		# Hacks for lack of ARM64 native in kernel-package for Jessie
 		# Device tree for uploading to eMMC
-		cp -ar $DTB_FILE ../../files-image/boot/dtb-${VERSION}-${REV}-osmc.img
+		cp -ar $DTB_FILE ../../files-image/boot/dtb-${VERSION}-${REV}-ms.img
         fi
         if [ "$1" == "vero564" ]
         then
@@ -271,24 +271,24 @@ then
                         if [ $? != 0 ]; then echo "Creating boot image failed in secure mode" && exit 1; fi
                         scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input multi.dtb --output $DTB_FILE
                         if [ $? != 0 ]; then echo "Signing DTB image failed" && exit 1; fi
-                        scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input kernel.img --output ../../files-image/boot/kernel-${VERSION}-${REV}-osmc.img
+                        scripts/sign-kernel-boot.sh --sign-kernel --key-dir $SIG_KEYS_DIR --input kernel.img --output ../../files-image/boot/kernel-${VERSION}-${REV}-ms.img
                         if [ $? != 0 ]; then echo "Signing kernel image failed" && exit 1; fi
                 else
-						scripts/mkbootimg --kernel arch/arm64/boot/Image.gz --pagesize 2048 --header_version 1 --base 0x0 --kernel_offset 0x1080000 --ramdisk ../../initramfs-src/initrd.img.gz --second multi.dtb --output ../../files-image/boot/kernel-${VERSION}-${REV}-osmc.img
+						scripts/mkbootimg --kernel arch/arm64/boot/Image.gz --pagesize 2048 --header_version 1 --base 0x0 --kernel_offset 0x1080000 --ramdisk ../../initramfs-src/initrd.img.gz --second multi.dtb --output ../../files-image/boot/kernel-${VERSION}-${REV}-ms.img
                         if [ $? != 0 ]; then echo "Creating boot image failed in non-secure mode" && exit 1; fi
 
                 fi
                 # Hacks for lack of ARM64 native in kernel-package for Jessie
                 # Device tree for uploading to eMMC
-                cp -ar $DTB_FILE ../../files-image/boot/dtb-${VERSION}-${REV}-osmc.img
+                cp -ar $DTB_FILE ../../files-image/boot/dtb-${VERSION}-${REV}-ms.img
         fi
 	if [ "$1" == "rbp464" ]
 	then
-		cp -ar arch/arm64/boot/Image ../../files-image/boot/vmlinuz-${VERSION}-${REV}-osmc
+		cp -ar arch/arm64/boot/Image ../../files-image/boot/vmlinuz-${VERSION}-${REV}-ms
 	fi
         if [ "$1" == "rbp2" ]
         then
-                cp -ar arch/arm/boot/zImage ../../files-image/boot/vmlinuz-${VERSION}-${REV}-osmc
+                cp -ar arch/arm/boot/zImage ../../files-image/boot/vmlinuz-${VERSION}-${REV}-ms
         fi
 		if [ "$1" == "vero2" ]
 		then
@@ -297,44 +297,44 @@ then
 		$BUILD
 		if [ $? != 0 ]; then echo "Building kernel module failed" && exit 1; fi
 		popd
-		mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/net/wireless/
+		mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/net/wireless/
 		strip --strip-unneeded drivers/net/wireless/rtl8812au/*8812au.ko
-		cp drivers/net/wireless/rtl8812au/*8812au.ko ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/net/wireless/
+		cp drivers/net/wireless/rtl8812au/*8812au.ko ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/net/wireless/
 		fi
         if [ "$1" == "vero364" ]
 	then
 		# Build V4L2 modules for Vero 4K
 		$BUILD M=drivers/osmc/media_modules CONFIG_AMLOGIC_MEDIA_VDEC_OSMC=m
-		mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/osmc
+		mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/osmc
 		for file in $(find drivers/osmc/media_modules/ -name "*.ko"); do
 		sign_module $file
-		cp $file ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/osmc
+		cp $file ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/osmc
 		done
 	fi
         if [ "$1" == "vero564" ]
         then
                 # Build V4L2 modules for Vero V
                 $BUILD M=drivers/osmc/media_modules CONFIG_AMLOGIC_MEDIA_VDEC_OSMC=m
-                mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/osmc
+                mkdir -p ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/osmc
                 for file in $(find drivers/osmc/media_modules/ -name "*.ko"); do
                 sign_module $file
-                cp $file ../../files-image/lib/modules/${VERSION}-${REV}-osmc/kernel/drivers/osmc
+                cp $file ../../files-image/lib/modules/${VERSION}-${REV}-ms/kernel/drivers/osmc
                 done
         fi
 	# Unset architecture
 	ARCH=$(arch)
 	export ARCH
 	popd
-	echo "Package: ${1}-image-${VERSION}-${REV}-osmc" >> files-image/DEBIAN/control
-	echo "Version: ${VERSION}-${REV}-osmc" >> files-image/DEBIAN/control
-        echo "Package: ${1}-headers-${VERSION}-${REV}-osmc" >> files-headers/DEBIAN/control
-        echo "Version: ${VERSION}-${REV}-osmc" >> files-headers/DEBIAN/control
-        echo "Package: ${1}-headers-sanitised-${VERSION}-${REV}-osmc" >> files-headers-sanitised/DEBIAN/control
-        echo "Version: ${VERSION}-${REV}-osmc" >> files-headers-sanitised/DEBIAN/control
-        echo "Package: ${1}-debug-${VERSION}-${REV}-osmc" >> files-debug/DEBIAN/control
-        echo "Version: ${VERSION}-${REV}-osmc" >> files-debug/DEBIAN/control
-        echo "Package: ${1}-source-${VERSION}-${REV}-osmc" >> files-source/DEBIAN/control
-        echo "Version: ${VERSION}-${REV}-osmc" >> files-source/DEBIAN/control
+	echo "Package: ${1}-image-${VERSION}-${REV}-ms" >> files-image/DEBIAN/control
+	echo "Version: ${VERSION}-${REV}-ms" >> files-image/DEBIAN/control
+        echo "Package: ${1}-headers-${VERSION}-${REV}-ms" >> files-headers/DEBIAN/control
+        echo "Version: ${VERSION}-${REV}-ms" >> files-headers/DEBIAN/control
+        echo "Package: ${1}-headers-sanitised-${VERSION}-${REV}-ms" >> files-headers-sanitised/DEBIAN/control
+        echo "Version: ${VERSION}-${REV}-ms" >> files-headers-sanitised/DEBIAN/control
+        echo "Package: ${1}-debug-${VERSION}-${REV}-ms" >> files-debug/DEBIAN/control
+        echo "Version: ${VERSION}-${REV}-ms" >> files-debug/DEBIAN/control
+        echo "Package: ${1}-source-${VERSION}-${REV}-ms" >> files-source/DEBIAN/control
+        echo "Version: ${VERSION}-${REV}-ms" >> files-source/DEBIAN/control
 	tee files-image/DEBIAN/postinst << EOF
 #!/bin/sh
 set -e
@@ -345,10 +345,10 @@ export DEB_MAINT_PARAMS="\$*"
 # Tell initramfs builder whether it's wanted
 export INITRD=Yes
 
-test -d /etc/kernel/postinst.d && run-parts --arg="${VERSION}-${REV}-osmc" --arg="/boot/vmlinuz-${VERSION}-${REV}-osmc" /etc/kernel/postinst.d
+test -d /etc/kernel/postinst.d && run-parts --arg="${VERSION}-${REV}-ms" --arg="/boot/vmlinuz-${VERSION}-${REV}-ms" /etc/kernel/postinst.d
 
 # OSMC -- make sure any out of tree modules are picked up properly
-/sbin/depmod "${VERSION}-${REV}-osmc"
+/sbin/depmod "${VERSION}-${REV}-ms"
 
 exit 0
 EOF
@@ -362,7 +362,7 @@ export DEB_MAINT_PARAMS="\$*"
 # Tell initramfs builder whether it's wanted
 export INITRD=Yes
 
-test -d /etc/kernel/postrm.d && run-parts --arg="${VERSION}-${REV}-osmc" --arg="/boot/vmlinuz-${VERSION}-${REV}-osmc" /etc/kernel/postrm.d
+test -d /etc/kernel/postrm.d && run-parts --arg="${VERSION}-${REV}-ms" --arg="/boot/vmlinuz-${VERSION}-${REV}-ms" /etc/kernel/postrm.d
 exit 0
 EOF
         tee files-image/DEBIAN/preinst << EOF
@@ -375,7 +375,7 @@ export DEB_MAINT_PARAMS="\$*"
 # Tell initramfs builder whether it's wanted
 export INITRD=Yes
 
-test -d /etc/kernel/preinst.d && run-parts --arg="${VERSION}-${REV}-osmc" --arg="/boot/vmlinuz-${VERSION}-${REV}-osmc" /etc/kernel/preinst.d
+test -d /etc/kernel/preinst.d && run-parts --arg="${VERSION}-${REV}-ms" --arg="/boot/vmlinuz-${VERSION}-${REV}-ms" /etc/kernel/preinst.d
 exit 0
 EOF
         tee files-image/DEBIAN/prerm << EOF
@@ -388,7 +388,7 @@ export DEB_MAINT_PARAMS="\$*"
 # Tell initramfs builder whether it's wanted
 export INITRD=Yes
 
-test -d /etc/kernel/prerm.d && run-parts --arg="${VERSION}-${REV}-osmc" --arg="/boot/vmlinuz-${VERSION}-${REV}-osmc" /etc/kernel/prerm.d
+test -d /etc/kernel/prerm.d && run-parts --arg="${VERSION}-${REV}-ms" --arg="/boot/vmlinuz-${VERSION}-${REV}-ms" /etc/kernel/prerm.d
 exit 0
 EOF
 	chmod +x files-image/DEBIAN/post*
@@ -398,20 +398,20 @@ EOF
 	fix_arch_ctl "files-headers-sanitised/DEBIAN/control"
         fix_arch_ctl "files-debug/DEBIAN/control"
 	fix_arch_ctl "files-source/DEBIAN/control"
-	dpkg_build files-image ${1}-image-${VERSION}-${REV}-osmc.deb
-	dpkg_build files-headers ${1}-headers-${VERSION}-${REV}-osmc.deb
-        dpkg_build files-headers-sanitised ${1}-headers-sanitised-${VERSION}-${REV}-osmc.deb
-	dpkg_build files-debug ${1}-image-debug-${VERSION}-${REV}-osmc.deb
-	dpkg_build files-source ${1}-source-${VERSION}-${REV}-osmc.deb
-	echo "Package: ${1}-kernel-osmc" >> files/DEBIAN/control
+	dpkg_build files-image ${1}-image-${VERSION}-${REV}-ms.deb
+	dpkg_build files-headers ${1}-headers-${VERSION}-${REV}-ms.deb
+        dpkg_build files-headers-sanitised ${1}-headers-sanitised-${VERSION}-${REV}-ms.deb
+	dpkg_build files-debug ${1}-image-debug-${VERSION}-${REV}-ms.deb
+	dpkg_build files-source ${1}-source-${VERSION}-${REV}-ms.deb
+	echo "Package: ${1}-kernel-ms" >> files/DEBIAN/control
 	if [ "$1" == "vero364" ]
 	then
-		echo "Depends: ${1}-image-${VERSION}-${REV}-osmc, vero3-bootloader-osmc:armhf (>=1.0.0)" >> files/DEBIAN/control
+		echo "Depends: ${1}-image-${VERSION}-${REV}-ms, vero3-bootloader-osmc:armhf (>=1.0.0)" >> files/DEBIAN/control
         else if [ "$1" == "vero564" ]
         then
-                echo "Depends: ${1}-image-${VERSION}-${REV}-osmc, vero5-bootloader-osmc:armhf (>=1.0.0)" >> files/DEBIAN/control
+                echo "Depends: ${1}-image-${VERSION}-${REV}-ms, vero5-bootloader-osmc:armhf (>=1.0.0)" >> files/DEBIAN/control
         else
-                echo "Depends: ${1}-image-${VERSION}-${REV}-osmc" >> files/DEBIAN/control
+                echo "Depends: ${1}-image-${VERSION}-${REV}-ms" >> files/DEBIAN/control
         fi
 	fi
 	case "$1" in
@@ -423,7 +423,7 @@ EOF
 			;;
 	esac
 	fix_arch_ctl "files/DEBIAN/control"
-	dpkg_build files/ ${1}-kernel-${VERSION}-${REV}-osmc.deb
+	dpkg_build files/ ${1}-kernel-${VERSION}-${REV}-ms.deb
 	build_return=$?
 fi
 teardown_env "${1}"
